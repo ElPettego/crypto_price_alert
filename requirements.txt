@@ -1,0 +1,4 @@
+python-telegram-bot
+websocket-client
+undetected_chromedriver
+pyvirtualdisplay
