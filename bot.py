@@ -17,11 +17,13 @@ USAGE = """🔧 USAGE:
 
 /help => DISPLAYS THIS MESSAGE
 
-/set_alert <assett> <price> => CREATE A NEW ALERT. <assett> is one of the assets in the belove list. <price> is the target price of the alarm. EXAMPLE => /set_alert BTCUSDT 100000
+/set_alert <asset> <price> => CREATE A NEW ALERT. <assett> is one of the assets in the belove list. <price> is the target price of the alarm. EXAMPLE => /set_alert BTCUSDT 100000
 
 /get_alert => SHOWS ACTIVE ALERTS
 
 /delete_alert <index> => DELETE ONE OF THE ACTIVE ALERTS. type /get_alert to show active alerts and then /delete_alert <index> to delete the alert. EXAMPLE => /delete_alert 1
+
+/get_price <asset> => GETS THE CURRENT PRICE OF THE ASSET. EXAMPLE => /get_price BTCUSDT
 
 🪙 AVAILABLE ASSETS 🪣: 
 - BTCUSDT
@@ -137,11 +139,29 @@ async def set_password(update : Update, context : ContextTypes.DEFAULT_TYPE) -> 
     ALERT_DB.set_password(password=pw)
     await update.effective_message.reply_text('PASSWORD CHANGED SUCCESFULLY!!')
 
+async def get_price(update : Update, context : ContextTypes.DEFAULT_TYPE) -> None:
+    chat_id = update.effective_message.chat_id
+    auth_ses = auth.AUTH()
+    if not auth_ses.is_user_auth(chat_id=chat_id):
+        await update.effective_message.reply_text(NOT_AUTH)
+        return
+    try:
+        assett = str(context.args[0])
+    except (IndexError, ValueError):
+        await update.effective_message.reply_text(USAGE)
+    if assett not in cfg.ASSETS:
+        await update.effective_message.reply_text("⚠️ ASSET NOT AVAILABLE ❌ WRITE TO @uomo_succo IF U WANNA ADD IT :)")
+        return
+    with open(f'./prices/{assett}.txt', 'r') as f:
+        current_price = f.read()
+    await update.effective_message.reply_text(f'ASSET => {assett}\nPRICE => {current_price}')
+    
 def main() -> None:
 
     application = Application.builder().token(cfg.BOT_TOKEN).build()
 
     application.add_handler(CommandHandler(['start', 'help'], start))
+    application.add_handler(CommandHandler('get_price', get_price))
     application.add_handler(CommandHandler('set_alert', set_alert))
     application.add_handler(CommandHandler('get_alert', get_alert))
     application.add_handler(CommandHandler('delete_alert', delete_alert))
