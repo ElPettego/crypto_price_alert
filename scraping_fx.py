@@ -4,7 +4,7 @@ import pyvirtualdisplay as pvd
 from selenium.webdriver.common.by import By
 
 XPATH = '/html/body/article/div/div[3]/div/div[3]/div[1]/div/div[3]/span/span[2]'
-DISPLAY = pvd.Display(visible=1, size=(800, 600))
+DISPLAY = pvd.Display(visible=0, size=(800, 600))
 OPTIONS = uc.ChromeOptions()
 OPTIONS.add_argument("--log-level=3")
 # OPTIONS.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -27,7 +27,7 @@ def main():
                 continue
             with open(f'./prices/{link["tag"]}.txt', 'w') as f:
                 f.write(str(price))
-            print(price, link['tag'])
+            # print(price, link['tag'])
         t.sleep(62)
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ import config as cfg
 import db 
 import auth
 
-WELCOME = """🎉 WELCOME TO CRYPTO PRICE ALERT BOT!!! 🤖
+WELCOME = """🎉 WELCOME TO TRADING PRICE ALERT BOT!!! 🤖
 
 """
 
@@ -17,7 +17,7 @@ USAGE = """🔧 USAGE:
 
 /help => DISPLAYS THIS MESSAGE
 
-/set_alert <assett> <price> => CREATE A NEW ALERT. <assett> is one of the cryptos in the belove list. <price> is the target price of the alarm. EXAMPLE => /set_alert BTCUSDT 100000
+/set_alert <assett> <price> => CREATE A NEW ALERT. <assett> is one of the assets in the belove list. <price> is the target price of the alarm. EXAMPLE => /set_alert BTCUSDT 100000
 
 /get_alert => SHOWS ACTIVE ALERTS
 
@@ -32,6 +32,8 @@ USAGE = """🔧 USAGE:
 - EURUSD
 - GBPUSD
 - EURGBP
+
+ℹ️ FX PRICES ARE AVAILABLE WITH 4 DECIMALS => 1.2345
 
 🌕 SEE YOU ON THE MOON 🚀"""
 
@@ -97,7 +99,7 @@ async def get_alert(update : Update, context : ContextTypes.DEFAULT_TYPE) -> Non
         await update.effective_message.reply_text(NOT_AUTH)
         return
     alerts = ALERT_DB.get_alerts(chat_id=chat_id)
-    print(alerts, chat_id)
+    print('ALERTS REQUESTED', chat_id)
     mex = ''
     for ind, alert in enumerate(alerts):
         mex += f'🚨 ALERT {ind+1}\n🪙 ASSETT => {alert["assett_tag"]} \n🎯 TARGET => {alert["target_price"]}\n⏲️ DATE => {alert["open_date"]}\n\n'
@@ -122,7 +124,18 @@ async def delete_alert(update : Update, context : ContextTypes.DEFAULT_TYPE) -> 
     ALERT_DB.delete_alert(chat_id=chat_id, open_date=alerts[index-1]['open_date'])
     await update.effective_message.reply_text(f'🚨 ALERT {index} DELETED SUCCESFULLY! 🗑️')
 
-
+async def set_password(update : Update, context : ContextTypes.DEFAULT_TYPE) -> None:
+    chat_id = update.effective_message.chat_id
+    if chat_id != 960900141:
+        await update.effective_message.reply_text('⛔ U CANT ACCESS THIS COMAND BRO!!! ❌')
+        return
+    try:
+        pw = str(context.args[0])
+    except (IndexError, ValueError):
+        await update.effective_message.reply_text('WRONG FORMAT BRO!')
+        return
+    ALERT_DB.set_password(password=pw)
+    await update.effective_message.reply_text('PASSWORD CHANGED SUCCESFULLY!!')
 
 def main() -> None:
 
@@ -132,6 +145,7 @@ def main() -> None:
     application.add_handler(CommandHandler('set_alert', set_alert))
     application.add_handler(CommandHandler('get_alert', get_alert))
     application.add_handler(CommandHandler('delete_alert', delete_alert))
+    application.add_handler(CommandHandler('set_password', set_password))
 
     try:
         application.run_polling()

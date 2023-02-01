@@ -43,3 +43,7 @@ class DB:
         with open(self.file, 'w') as f:
             f.writelines(alerts)
 
+    def set_password(self, password : str):
+        with open('./auth/password.txt', 'w') as f:
+            f.write(password)
+
