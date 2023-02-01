@@ -7,7 +7,7 @@ ALERT_DB = db.DB()
 
 def main():
     while True:
-        print('CHECKING ALERTS...')
+        # print('CHECKING ALERTS...')
         alerts = ALERT_DB.get_alerts()
         # print(type(alerts))
         for al in alerts:

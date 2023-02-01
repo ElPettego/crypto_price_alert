@@ -154,8 +154,8 @@ async def get_price(update : Update, context : ContextTypes.DEFAULT_TYPE) -> Non
         return
     with open(f'./prices/{assett}.txt', 'r') as f:
         current_price = f.read()
-    await update.effective_message.reply_text(f'ASSET => {assett}\nPRICE => {current_price}')
-    
+    await update.effective_message.reply_text(f'🪙 ASSET => {assett}\n💰 PRICE => {current_price}')
+
 def main() -> None:
 
     application = Application.builder().token(cfg.BOT_TOKEN).build()
